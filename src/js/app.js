@@ -1,90 +1,120 @@
+// random integer
+
 function getRandomInt(min, max) {
   // Don't worry about how this works, just trust that it
   // generates an integer between min and max.
   return Math.floor(Math.random() * (max + 1 - min)) + min;
 }
 
-const newGame = document.querySelector(`.btn-new`);
-const roll = document.querySelector(`.btn-roll`);
-const hold = document.querySelector(`.btn-hold`);
-const dice1Icon = document.querySelector(`#dice1`);
-const dice2Icon = document.querySelector(`#dice2`);
-const player0Panel = document.querySelector(`.player-0-panel`);
-const player0Round = document.querySelector(`#current-0`);
-const player0Total = document.querySelector(`#score-0`);
-const player1Panel = document.querySelector(`.player-1-panel`);
-const player1Round = document.querySelector(`#current-1`);
-const player1Total = document.querySelector(`#score-1`);
+// delcarations
 
-let roundScore = 0,
-  currPlayer = 0,
-  player0Score = 0,
-  player1Score = 0;
+const rollButton = document.querySelector(".btn-roll");
+const holdButton = document.querySelector(".btn-hold");
+let currScore = 0; 
+let playerTotal;
+const player1 = document.querySelector(".player-0-panel");
+const player2 = document.querySelector(".player-1-panel");
 
-const startNewGame = function () {
-  totalTurnScore = 0;
-  currPlayer = 0;
-  player0Score = 0;
-  player1Score = 0;
 
-  dice1Icon.src = `dice-6.png`;
-  dice2Icon.src = `dice-6.png`;
+// hold button clicked
 
-  player0Panel.classList.add(`active`);
-  player1Panel.classList.remove(`active`);
-
-  player1Round.textContent = 0;
-  player1Total.textContent = 0;
-  player1Round.textContent = 0;
-  player1Total.textContent = 0;
-}
-
-const rollDice = function () {
-  let dice1 = 0,
-      dice2 = 0;
-
-  dice1 = getRandomInt(1, 6);
-  dice2 = getRandomInt(1, 6);
-
-  dice1Icon.src = `dice-` + dice1 + `.png`;
-  dice2Icon.src = `dice-` + dice2 + `.png`;
-
-  if (dice1 == 1 || dice2 == 1) {
-    alert(`You rolled a 1`);
-    totalTurnScore = 0;
-    holdDice();
+holdButton.addEventListener("click", e => {
+  if (player1.classList.contains("active")) {
+    playerTotal = document.querySelector("#score-0");
+    playerTotal.innerHTML = parseInt(currScore.innerHTML) + parseInt(playerTotal.innerHTML);
   } else {
-    totalTurnScore += dice1 + dice2;
+    playerTotal = document.querySelector("#score-1");
+    playerTotal.innerHTML = parseInt(currScore.innerHTML) + parseInt(playerTotal.innerHTML);
+  }
+  currScore.innerHTML = 0;
+  evaluateWin();
+  player1.classList.toggle("active");
+  player2.classList.toggle("active");
+});
 
-    currPlayer == 0 ? player0Round.textContent = totalTurnScore : player1Round.textContent = totalTurnScore;
+// rolled a one
+
+function oneRolled() {
+  alert("You rolled a one! Your turn is over.");
+  currScore.innerHTML = 0;
+  player1.classList.toggle("active");
+  player2.classList.toggle("active");
+}
+
+// evaluate winner
+
+function evaluateWin() {
+  if (playerTotal.innerHTML >= 100) {
+    if (player1.classList.contains("active")) {
+      alert("Player 1 has won!")
+    } else {
+      alert("Player 2 has won!")
+    }
+    location.reload();
   }
 }
 
-const holdDice = function () {
-  if (currPlayer == 0) {
-    player0Score += totalTurnScore;
-    player0Total.textContent = player0Score;
-    totalTurnScore = 0;
-    currPlayer++;
-    player0Panel.classList.remove(`active`);
-    player1Panel.classList.add(`active`);
+// roll button clicked
+
+rollButton.addEventListener("click", e => {
+  let firstRoll = getRandomInt(1, 6);
+  let secondRoll = getRandomInt(1, 6);
+  if (firstRoll === 1 || secondRoll === 1) {
+    diceImg(firstRoll, secondRoll);
+    oneRolled();
   } else {
-    player1Score += totalTurnScore;
-    player1Total.textContent = player1Score;
-    totalTurnScore = 0;
-    currPlayer--;
-    player0Panel.classList.add(`active`);
-    player1Panel.classList.remove(`active`);
+    diceImg(firstRoll, secondRoll);
+    roundTotal((firstRoll + secondRoll));
   }
-  if (player0Score >= 100) {
-    alert(`Player 1 wins!`);
-    startNewGame();
-  } else if (player1Score >= 100) {
-    alert(`Player 2 wins!`);
-    startNewGame();
+});
+
+function roundTotal(rollSum) {
+  if (player1.classList.contains("active")) {
+    currScore = document.querySelector("#current-0");
+    currScore.innerHTML = parseInt(rollSum) + parseInt(currScore.innerHTML);
+  } else {
+    currScore = document.querySelector("#current-1");
+    currScore.innerHTML = parseInt(rollSum) + parseInt(currScore.innerHTML);
   }
 }
 
-newGame.addEventListener(`click`, startNewGame);
-roll.addEventListener(`click`, rollDice);
-hold.addEventListener(`click`, holdDice);
+// Dice image change
+
+function diceImg(imgNum, imgNum2) {
+  const dice1 = document.querySelector("#dice1");
+  const dice2 = document.querySelector("#dice2");
+  if (imgNum === 1) {
+    dice1.src = "Images/dice-1.png";
+  } else if (imgNum === 2) {
+    dice1.src = "Images/dice-2.png";
+  } else if (imgNum === 3) {
+    dice1.src = "Images/dice-3.png";
+  } else if (imgNum === 4) {
+    dice1.src = "Images/dice-4.png";
+  } else if (imgNum === 5) {
+    dice1.src = "Images/dice-5.png";
+  } else if (imgNum === 6) {
+    dice1.src = "Images/dice-6.png";
+  }
+  if (imgNum2 === 1) {
+    dice2.src = "Images/dice-1.png";
+  } else if (imgNum2 === 2) {
+    dice2.src = "Images/dice-2.png";
+  } else if (imgNum2 === 3) {
+    dice2.src = "Images/dice-3.png";
+  } else if (imgNum2 === 4) {
+    dice2.src = "Images/dice-4.png";
+  } else if (imgNum2 === 5) {
+    dice2.src = "Images/dice-5.png";
+  } else if (imgNum2 === 6) {
+    dice2.src = "Images/dice-6.png";
+  }
+}
+
+// New Game
+
+const reset = document.querySelector(".btn-new");
+
+reset.addEventListener("click", e => {
+  location.reload();
+});
